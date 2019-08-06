@@ -38,8 +38,5 @@ services:
       - monitoring-net
       - global-nginx-proxy-net
     restart: always
-    environment:
-      - VIRTUAL_HOST=your.domain
-      - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=your.domain
-      - LETSENCRYPT_EMAIL=developer@tobiaskloss.com
+    env_file:
+      - grafana.env

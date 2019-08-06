@@ -32,11 +32,9 @@ services:
     volumes:
       - prometheus-docker_grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
-    env_file:
-      - ./grafana/config.monitoring
     networks:
       - monitoring-net
       - global-nginx-proxy-net
     restart: always
     env_file:
-      - grafana.env
+      - ./grafana.env

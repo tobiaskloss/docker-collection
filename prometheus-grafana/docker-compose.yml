@@ -1,0 +1,45 @@
+version: '3.2'
+
+volumes:
+  prometheus-docker_prometheus_data: {}
+  prometheus-docker_grafana_data: {}
+
+networks:
+  monitoring-net:
+  global-nginx-proxy-net:
+    external: true
+services:
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-docker_prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=2232h'
+    networks:
+      - monitoring-net
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - prometheus-docker_grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      - monitoring-net
+      - global-nginx-proxy-net
+    restart: always
+    environment:
+      - VIRTUAL_HOST=your.domain
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=your.domain
+      - LETSENCRYPT_EMAIL=developer@tobiaskloss.com
